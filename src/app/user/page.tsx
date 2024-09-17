@@ -29,7 +29,7 @@ export default function Page() {
           trigger_reload();
         }}
       >
-        DELETE ALL
+        DELETE ALL ALL
       </button>
     </div>
   );
