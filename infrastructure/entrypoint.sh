@@ -1,20 +1,35 @@
 #!/bin/bash
-set -e
 
-# If the RUNNER_TOKEN is not provided, exit
-if [ -z "$RUNNER_TOKEN" ]; then
-  echo "RUNNER_TOKEN not provided!"
-  exit 1
+if [ -z $REPO_URL ]; then
+    echo "missing token"
+    exit 1
+fi
+if [ -z $CONFIG_TOKEN ]; then
+    echo "missing token"
+    exit 1
 fi
 
-# GitHub Repository URL
-if [ -z "$RUNNER_REPO_URL" ]; then
-  echo "RUNNER_REPO_URL not provided!"
-  exit 1
-fi
 
-# Configure and register the runner
-./config.sh --url "${RUNNER_REPO_URL}" --token "${RUNNER_TOKEN}" --unattended --replace
+if [ ! -e ./initialized ]; 
+then
+    echo `pwd`
+    if [ -z $REPO_URL ]; then
+    echo "missing token"
+    exit 1
+    fi
+    if [ -z $CONFIG_TOKEN ]; then
+        echo "missing token"
+        exit 1
+    fi
+    ./config.sh --url $REPO_URL --token $CONFIG_TOKEN --unattended --replace
+    sudo ./svc.sh install github-runner
+    touch initialized
+fi 
 
-# Run the runner
-./run.sh
+sudo ./svc.sh status | grep 'active ( running )'
+if [ ! $? -eq 0 ]; 
+then
+    sudo ./svc.sh start
+fi 
+
+tail -f /dev/null
