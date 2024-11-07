@@ -1,3 +1,4 @@
+using cs_backend.Infrastructure;
 using cs_backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -6,17 +7,13 @@ namespace cs_backend.Controllers
 {
     [ApiController]
     [Route("user")]
-    public class UserController(ILogger<UserController> logger, UserService userService, IHttpContextAccessor httpCtxAccessor) : ControllerBase
+    public class UserController(ILogger<UserController> logger, UserService userService, IHttpContextAccessor httpCtxAccessor, JwtService jwt) : ControllerBase
     {
         [HttpPost("login")]
-        public async Task Login([FromBody] UserAuthenticationData loginUser)
+        public async Task<IActionResult> Login([FromBody] UserAuthenticationData loginUser)
         {
-            if (! await userService.LogIn(loginUser)) httpCtxAccessor.HttpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
-            else
-            {
-                //httpCtxAccessor.HttpContext.Response.Headers.Authorization = Convert.ToBase64String()
-
-            }
+            if (! await userService.LogIn(loginUser)) return BadRequest();
+            else  return Ok(jwt.GenerateJwtToken(loginUser.UserName)); 
         }
 
         [HttpPost("register")]

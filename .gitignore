@@ -10,3 +10,5 @@
 /cs_backend/obj
 /cs_backend/appsettings.Production.json
 /cs_backend/tempusfujit.db
+/cs_backend/tempusfujit.db-shm
+/cs_backend/tempusfujit.db-wal
