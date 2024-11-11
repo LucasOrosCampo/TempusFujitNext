@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import tokenService from "@/utils/token";
 import { useRouter } from "next/navigation";
+import GroupsPage from "./groups";
 
 export default function Home() {
   let router = useRouter();
@@ -29,10 +30,13 @@ export default function Home() {
   return (
     <>
       {isAuthed && (
-        <div className="flex items-center justify-center h-32 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 shadow-lg">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-wide">
-            {"bienvenido " + username}
-          </h1>
+        <div className="h-screen flex flex-col">
+          <div className="flex items-center justify-center h-32 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 shadow-lg">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-wide">
+              {"bienvenido " + username}
+            </h1>
+          </div>
+          <GroupsPage />
         </div>
       )}
     </>
