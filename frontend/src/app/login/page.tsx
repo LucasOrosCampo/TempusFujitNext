@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import tokenService from "@/utils/token";
+import { useRouter } from "next/navigation";
 
 type User = {
   userName: string;
@@ -14,6 +15,7 @@ type User = {
 
 export default function Page() {
   let { toast } = useToast();
+  let router = useRouter();
   let [username, setUsername] = useState<string>("");
   let [password, setPwd] = useState<string>("");
 
@@ -28,9 +30,20 @@ export default function Page() {
     );
     if (result !== null) {
       tokenService.setToken(result);
+      router.push("/");
     }
   }
-  async function handleRegister(): Promise<void> {}
+  async function handleRegister(): Promise<void> {
+    await post<User>(
+      "user/register",
+      {
+        userName: username,
+        password: password,
+      },
+      () => toast({ title: "Register error", variant: "destructive" })
+    );
+    toast({ title: "Registered" });
+  }
 
   return (
     <div className="bg-blue-300 h-screen flex items-center justify-center">

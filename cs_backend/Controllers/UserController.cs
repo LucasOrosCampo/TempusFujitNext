@@ -1,5 +1,6 @@
 using cs_backend.Infrastructure;
 using cs_backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -23,6 +24,10 @@ namespace cs_backend.Controllers
             var result =await userService.Register(registerUser);
             if (!result) httpCtxAccessor.HttpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
         }
+
+        [Authorize]
+        [HttpGet("validate/token")]
+        public async Task<bool> ValidateToken() => true;
     }
 
     public record UserAuthenticationData
@@ -34,6 +39,11 @@ namespace cs_backend.Controllers
         {
             return !string.IsNullOrEmpty(UserName) &&  !string.IsNullOrEmpty(Password); 
         }
+    }
+
+    public record UserInformation
+    {
+        public string UserName { get; set; } = string.Empty;
     }
 
 } 
