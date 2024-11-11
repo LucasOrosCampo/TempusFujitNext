@@ -12,3 +12,7 @@
 /cs_backend/tempusfujit.db
 /cs_backend/tempusfujit.db-shm
 /cs_backend/tempusfujit.db-wal
+/.vs
+/cs_backend/Properties/PublishProfiles
+/cs_backend/.config/dotnet-tools.json
+/cs_backend/cs_backend.csproj.user

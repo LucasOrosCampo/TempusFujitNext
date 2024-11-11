@@ -9,9 +9,9 @@ namespace cs_backend.Controllers
     [Authorize]
     [ApiController]
     [Route("session")]
-    public class SessionController() : ControllerBase
+    public class SessionController : ControllerBase
     {
-        [HttpPost("test")]
+        [HttpGet("test")]
         public async Task<IActionResult> Test()
         {
             return Ok(); 
