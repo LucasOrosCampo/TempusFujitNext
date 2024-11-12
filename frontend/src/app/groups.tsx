@@ -5,12 +5,12 @@ import { DataTable } from "@/components/ui/datatable";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { get, post } from "@/utils/api";
 import { ColumnDef } from "@tanstack/react-table";
 import { CirclePlus } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 
 type Group = {
-  id: number;
   name: string;
   description: string | null;
 };
@@ -25,7 +25,9 @@ export default function GroupsPage() {
   }, [name, groups]);
   let { toast } = useToast();
 
-  let load = async () => {};
+  let load = async () => {
+    setGroups(await get("group"));
+  };
   useEffect(() => {
     load();
   }, []);
@@ -40,16 +42,17 @@ export default function GroupsPage() {
     },
   ];
 
-  let handleAdd = () => {
+  let handleAdd = async () => {
     if (!name || groups.some((x) => x.name === name)) {
       toast({ title: "Cannot add", variant: "destructive" });
       return;
     }
-    let lastid = Math.floor(100 * Math.random());
-    setGroups([
-      ...groups,
-      { id: lastid, name: name, description: description ?? null },
-    ]);
+    await post<Group>("group/create", {
+      name: name,
+      description: description ?? null,
+    });
+    toast({ title: "Group created", variant: "default" });
+    load();
   };
 
   let shouldIncludeGroup = (group: Group): boolean => {
