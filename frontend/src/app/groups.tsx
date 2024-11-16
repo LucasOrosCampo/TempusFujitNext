@@ -8,17 +8,15 @@ import { useToast } from "@/hooks/use-toast";
 import { get, post } from "@/utils/api";
 import { ColumnDef } from "@tanstack/react-table";
 import { CirclePlus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
-
-type Group = {
-  name: string;
-  description: string | null;
-};
 
 export default function GroupsPage() {
   let [groups, setGroups] = useState<Group[]>([]);
   let [name, setName] = useState<string | undefined>(undefined);
   let [description, setDescription] = useState<string | undefined>(undefined);
+
+  let router = useRouter();
 
   let shouldDisplayAdd = useMemo<boolean>(() => {
     return !groups.some((x) => x.name === name);
@@ -47,7 +45,7 @@ export default function GroupsPage() {
       toast({ title: "Cannot add", variant: "destructive" });
       return;
     }
-    await post<Group>("group/create", {
+    await post<GroupRequest>("group/create", {
       name: name,
       description: description ?? null,
     });
@@ -103,7 +101,11 @@ export default function GroupsPage() {
         )}
       </div>
       <div className="w-10/12">
-        <DataTable columns={columns} data={groups.filter(shouldIncludeGroup)} />
+        <DataTable
+          columns={columns}
+          data={groups.filter(shouldIncludeGroup)}
+          onRowClick={(group) => router.push(`group?groupName=${group.name}`)}
+        />
       </div>
     </div>
   );

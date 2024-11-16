@@ -10,18 +10,22 @@ using System.Xml.Linq;
 
 namespace cs_backend.Services
 {
-    public class GroupService(IDbContextFactory<MyDbContext> dbContextFactory)
+    public class SessionService(IDbContextFactory<MyDbContext> dbContextFactory)
     {
-        public async Task<GroupDto[]> GetAll(string user)
+        public async Task<SessionDto[]> GetAll(string user, string group)
         {
             using var db = dbContextFactory.CreateDbContext();
-            return db.Groups.Where(x => x.User.UserName == user).Select(GroupDto.FromState).ToArray();
+            var groupState = db.Groups.FirstOrDefault(x => x.Name == group && x.UserName == user);
+            if (groupState == null) return [];
+            return db.Sessions.Where(x => x.GroupId == groupState!.Id)
+                .OrderByDescending(x => x.Start)
+                .Select(SessionDto.FromState).ToArray();
         }
 
-        public async Task<GroupDto> Get(string user, string name)
+        public async Task<GroupDto> Get(string user, string groupName)
         {
             using var db = dbContextFactory.CreateDbContext();
-            var group = db.Groups.FirstOrDefault(x => x.User.UserName == user && x.Name == name);
+            var group = db.Groups.FirstOrDefault(x => x.User.UserName == user && x.Name == groupName);
             var group_dto = group != null ? GroupDto.FromState(group) : null;
 
             return group_dto;

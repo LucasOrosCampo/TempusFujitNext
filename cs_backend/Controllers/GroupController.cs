@@ -25,6 +25,18 @@ namespace cs_backend.Controllers
             return await groupService.GetAll(user);
         }
 
+        [HttpGet]
+        [Route("{name}")]
+        public async Task<GroupDto?> Get(string name)
+        {
+            var user = UserHelper.GetUser(User);
+            if (user == null || string.IsNullOrEmpty(name)) {
+                HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                return null; 
+            }
+            return await groupService.Get(user, name);
+        }
+
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create([FromBody] GroupRequest createGroup)

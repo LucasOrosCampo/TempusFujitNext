@@ -8,6 +8,7 @@ namespace cs_backend.Infrastructure
         public MyDbContext(DbContextOptions<MyDbContext> options) : base(options) { }
         public DbSet<UserState> Users {  get; set; } 
         public DbSet<GroupState> Groups {  get; set; } 
+        public DbSet<SessionState> Sessions {  get; set; } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -17,6 +18,8 @@ namespace cs_backend.Infrastructure
             modelBuilder.Entity<UserState>().HasKey(x => x.UserName);
 
             modelBuilder.Entity<GroupState>().HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserName);
+
+            modelBuilder.Entity<SessionState>().HasOne(x => x.Group).WithMany().HasForeignKey(x => x.GroupId);
         }
     }
 

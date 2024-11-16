@@ -62,6 +62,7 @@ builder.Services.AddDbContextFactory<MyDbContext>( options => options.UseSqlite(
 
 builder.Services.AddTransient<UserService>();
 builder.Services.AddTransient<GroupService>();
+builder.Services.AddTransient<SessionService>();
 builder.Services.AddTransient<JwtService>();
 
 var app = builder.Build();
