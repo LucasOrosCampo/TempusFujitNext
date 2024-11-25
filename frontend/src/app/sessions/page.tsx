@@ -10,6 +10,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CirclePlus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useMemo, Suspense } from "react";
+import { Session } from "../models/session";
+import dayjs, { Dayjs } from "dayjs";
+import { DatePickerWithRange } from "@/components/ui/date-picker-range";
+import React from "react";
+import { DateRange } from "react-day-picker";
+import { setDate } from "date-fns";
 
 export default function SessionsPage() {
   return (
@@ -21,21 +27,31 @@ export default function SessionsPage() {
 
 function SessionsPageContent() {
   let [sessions, setSessions] = useState<Session[]>([]);
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
+    from: dayjs().startOf('month'),
+    to: dayjs().endOf('month'),
+  })
 
   let group = useSearchParams().get("group");
   let load = async () => {
-    setSessions(await get(`session?=${group}`));
+    let query = `session?group=${group}&start=${dateRange?.from}`
+    if (!!dateRange?.to) query += `&end=${dateRange?.to}`
+
+    setSessions(await get(query));
   };
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => { load() }, [dateRange])
+
   let columns: ColumnDef<Session>[] = [
     {
-      accessorKey: "start",
+      accessorFn: (x: Session) => x.start ? dayjs(x.start).format('DD/MM HH:mm') : '',
       header: "Comienzo",
     },
     {
-      accessorKey: "end",
+      accessorFn: (x: Session) => x.end ? dayjs(x.end).format('DD/MM HH:mm') : '',
       header: "Final",
     },
   ];
@@ -45,6 +61,14 @@ function SessionsPageContent() {
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-wide">
           {"sessions de " + group}
         </h1>
+      </div>
+      <div className="flex gap-8 my-6">
+        <div className="grid w-full max-w-sm items-center">
+          <Label className="px-3" htmlFor="nameSearch">
+            Name
+          </Label>
+          <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} />
+        </div>
       </div>
       <div className="w-10/12">
         <DataTable columns={columns} data={sessions} />

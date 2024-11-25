@@ -8,12 +8,20 @@ namespace cs_backend.Services
 {
     public class SessionService(IDbContextFactory<MyDbContext> dbContextFactory)
     {
-        public async Task<SessionDto[]> GetAll(string user, string group)
+        public async Task<SessionDto[]> Search(string user, string group, DateTime? start, DateTime? end)
         {
             using var db = dbContextFactory.CreateDbContext();
-            var groupState = db.Groups.FirstOrDefault(x => x.Name == group && x.UserName == user);
-            if (groupState == null) return [];
-            return db.Sessions.Where(x => x.GroupId == groupState!.Id)
+            var groupId = db.Groups.FirstOrDefault(x => x.Name == group && x.UserName == user)?.Id;
+            if (groupId == null) return [];
+
+            start = start?.Date;
+            end = end?.Date;
+
+            return db.Sessions
+                .Where(x => x.GroupId == groupId 
+                && (!start.HasValue || start <= x.Start )
+                && (!end.HasValue || x.End <= end)
+                )
                 .OrderByDescending(x => x.Start)
                 .Select(SessionDto.FromState).ToArray();
         }
@@ -56,5 +64,15 @@ namespace cs_backend.Services
             db.SaveChanges();
             return true;
         }
+        
+        public async Task<double> GetDuration(string user, string group, DateTime? start, DateTime? end)
+        {
+
+            var sessions = await Search(user, group, start, end);
+
+            return sessions.Sum(x => x.End != null ? (x.End - x.Start).Value.TotalHours : 0);
+                
+        }
+
     }
 }

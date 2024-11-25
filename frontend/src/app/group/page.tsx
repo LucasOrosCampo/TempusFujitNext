@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { DatePickerWithRange } from "@/components/ui/date-picker-range";
 import { Drawer } from "@/components/ui/drawer";
 import { TimePeriodPicker } from "@/components/ui/timePeriodPicker";
 import { useTimePeriod } from "@/hooks/use-time-period";
@@ -10,6 +11,7 @@ import { Table } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
 
 const GroupPage = () => {
   return (
@@ -27,18 +29,35 @@ function GroupPageContent() {
 
   let groupName = useSearchParams().get("groupName");
   let [sessionStatus, setSessionStatus] = useState<SessionStatus>('Initial')
+  let [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: dayjs().startOf('month'),
+    to: dayjs().endOf('month'),
+  })
+  let [durationForPeriod, setDurationForPeriod] = useState<number | undefined>(undefined)
 
   let { toast } = useToast()
-
-  let [group, setGroup] = useState<Group | undefined>(undefined);
-  useEffect(() => {
-    load();
-  }, []);
-
   async function load() {
     let group = await get<Group>(`group/${groupName}`);
     setGroup(group);
   }
+
+  let [group, setGroup] = useState<Group | undefined>(undefined);
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  async function getDuration() {
+    if (!group) return
+    let query = `session/duration?group=${group.name}&start=${dateRange?.from}`
+    if (!!dateRange?.to) query += `&end=${dateRange?.to}`
+    setDurationForPeriod(await get<number>(query))
+
+  }
+
+  useEffect(() => {
+    getDuration();
+  }, [dateRange]);
 
   async function handleCreateSession() {
     let now = dayjs()
@@ -71,6 +90,10 @@ function GroupPageContent() {
           <h1 className="text-xl text-red-500">Session in progress</h1>
           <Button onClick={() => handleStopSession()}>Stop</Button>
         </div>}
+      <div className="flex gap-5">
+        <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} />
+        <h1 className="text-xl">{durationForPeriod?.toFixed(1)}</h1>
+      </div>
     </div>
   );
 }

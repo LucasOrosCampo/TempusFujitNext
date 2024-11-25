@@ -1,7 +1,8 @@
+import { Dayjs } from "dayjs";
 
-type Session = {
-    id: number 
-    groupId:number 
-    start: string | null
-    end: string | null
-}
+export type Session = {
+  id: number;
+  groupId: number;
+  start: Dayjs | null;
+  end: Dayjs | null;
+};

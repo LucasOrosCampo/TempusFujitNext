@@ -13,14 +13,14 @@ namespace cs_backend.Controllers
     public class SessionController(SessionService sessionService) : ControllerBase
     {
         [HttpGet]
-        public async Task<SessionDto[]> Get([FromQuery] string groupName)
+        public async Task<SessionDto[]> Get([FromQuery] string group, [FromQuery] DateTime? start, [FromQuery] DateTime? end)
         {
             var user = UserHelper.GetUser(User);
             if (user == null) {
                 HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
                 return []; 
             }
-            return await sessionService.GetAll(user, groupName);
+            return await sessionService.Search(user, group, start, end);
         }
 
         public record StartSession(DateTime Start, int Group);
@@ -45,6 +45,16 @@ namespace cs_backend.Controllers
                 return Forbid(); 
             }
             return (await sessionService.End(user, endSession)) ? Ok() : BadRequest();
+        }
+        [HttpGet("duration")]
+        public async Task<double> GetDuration([FromQuery] string group, [FromQuery] DateTime? start,[FromQuery] DateTime? end)
+        {
+            var user = UserHelper.GetUser(User);
+            if (user == null) {
+                HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                return 0; 
+            }
+            return await sessionService.GetDuration(user, group, start, end);
         }
 
 
