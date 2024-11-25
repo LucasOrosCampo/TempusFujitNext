@@ -9,11 +9,18 @@ import { get, post } from "@/utils/api";
 import { ColumnDef } from "@tanstack/react-table";
 import { CirclePlus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 
 export default function SessionsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SessionsPageContent />
+    </Suspense>
+  );
+}
+
+function SessionsPageContent() {
   let [sessions, setSessions] = useState<Session[]>([]);
-  let { toast } = useToast();
 
   let group = useSearchParams().get("group");
   let load = async () => {
@@ -32,7 +39,6 @@ export default function SessionsPage() {
       header: "Final",
     },
   ];
-
   return (
     <div className="flex flex-col justify-center items-center gap-4">
       <div className="rounded-xl p-5 m-5 flex items-center justify-center h-32 bg-gradient-to-r from-purple-700 via-pink-700 to-red-700 shadow-lg">

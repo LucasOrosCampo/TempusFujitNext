@@ -22,5 +22,31 @@ namespace cs_backend.Controllers
             }
             return await sessionService.GetAll(user, groupName);
         }
+
+        public record StartSession(DateTime Start, int Group);
+        [HttpPost("start")]
+        public async Task<IActionResult> Start([FromBody] StartSession startSession)
+        {
+            var user = UserHelper.GetUser(User);
+            if (user == null) {
+                HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                return Forbid(); 
+            }
+            return (await sessionService.Start(user, startSession)) ? Ok() : BadRequest();
+        }
+
+        public record EndSession(DateTime Start, DateTime End, int Group); 
+        [HttpPost("end")]
+        public async Task<IActionResult> End([FromBody] EndSession endSession)
+        {
+            var user = UserHelper.GetUser(User);
+            if (user == null) {
+                HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                return Forbid(); 
+            }
+            return (await sessionService.End(user, endSession)) ? Ok() : BadRequest();
+        }
+
+
     }
 } 

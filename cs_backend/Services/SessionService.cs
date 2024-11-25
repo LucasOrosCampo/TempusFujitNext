@@ -1,12 +1,8 @@
 ﻿using cs_backend.Infrastructure;
-using cs_backend.Infrastructure.ViewModels;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
-using cs_backend.Controllers;
-using static cs_backend.Controllers.GroupController;
 using cs_backend.Infrastructure.PersistedModels;
-using System.Xml.Linq;
+using cs_backend.Infrastructure.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using static cs_backend.Controllers.SessionController;
 
 namespace cs_backend.Services
 {
@@ -33,12 +29,30 @@ namespace cs_backend.Services
         }
 
 
-        public async Task<bool> CreateGroup(GroupRequest createGroup, string user)
+        public async Task<bool> Start(string user, StartSession startSession)
         {
             using var db = dbContextFactory.CreateDbContext(); 
-            if (db.Groups.Any(x => x.Name == createGroup.Name && x.User.UserName == user)) return false;
+            var groupId = db.Groups.FirstOrDefault(x => x.Id == startSession.Group)?.Id;
+
+            if (groupId == null) return false;
             
-            db.Add(new GroupState { Name = createGroup.Name, Description = createGroup.Description, UserName = user });
+            db.Add(new SessionState { Start= startSession.Start, End = null, GroupId = groupId.Value });
+            db.SaveChanges();
+            return true;
+        }
+        public async Task<bool> End(string user, EndSession endSession)
+        {
+            using var db = dbContextFactory.CreateDbContext(); 
+            var groupId = db.Groups.FirstOrDefault(x => x.Id == endSession.Group)?.Id;
+
+            if (groupId == null) return false;
+            
+            var runningSession = db.Sessions.FirstOrDefault(x => x.GroupId == groupId.Value && x.Start == endSession.Start && x.End == null);
+
+            if (runningSession == null || runningSession?.Start >= endSession.End) return false;
+
+            runningSession.End = endSession.End; 
+
             db.SaveChanges();
             return true;
         }
