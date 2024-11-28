@@ -46,6 +46,7 @@ namespace cs_backend.Controllers
             }
             return (await sessionService.End(user, endSession)) ? Ok() : BadRequest();
         }
+        
         [HttpGet("duration")]
         public async Task<double> GetDuration([FromQuery] string group, [FromQuery] DateTime? start,[FromQuery] DateTime? end)
         {

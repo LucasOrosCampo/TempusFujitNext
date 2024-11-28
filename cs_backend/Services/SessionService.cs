@@ -73,6 +73,5 @@ namespace cs_backend.Services
             return sessions.Sum(x => x.End != null ? (x.End - x.Start).Value.TotalHours : 0);
                 
         }
-
     }
 }

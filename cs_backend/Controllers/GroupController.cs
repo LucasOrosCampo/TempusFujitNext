@@ -55,6 +55,20 @@ namespace cs_backend.Controllers
 
             return BadRequest();
         }
+        
+        [HttpPost("delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            if (!int.TryParse(id, out var parsedInt)) return BadRequest();
+
+            var user = UserHelper.GetUser(User);
+            if (user == null) {
+                HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                return Forbid(); 
+            }
+            return (await groupService.Delete(user, parsedInt)) ? Ok() : BadRequest();
+        }
+
 
     public record GroupRequest(string Name, string? Description);
  

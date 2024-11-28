@@ -38,5 +38,16 @@ namespace cs_backend.Services
             db.SaveChanges();
             return true;
         }
+        
+        public async Task<bool> Delete(string user, int id)
+        {
+            using var db = dbContextFactory.CreateDbContext();
+            var group = db.Groups.FirstOrDefault(x => x.Id == id && user == x.UserName);
+            if (group == null) return false;
+            var groupId = db.Groups.Remove(group);
+            db.SaveChanges();
+            return true;
+        }
+
     }
 }

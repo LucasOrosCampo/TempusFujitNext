@@ -9,7 +9,8 @@ import { get, post } from "@/utils/api";
 import { ColumnDef } from "@tanstack/react-table";
 import { CirclePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, SyntheticEvent } from "react";
+import { Trash } from "lucide-react";
 
 export default function GroupsPage() {
   let [groups, setGroups] = useState<Group[]>([]);
@@ -29,6 +30,14 @@ export default function GroupsPage() {
   useEffect(() => {
     load();
   }, []);
+
+  async function handleDelete(e: SyntheticEvent, groupId: number) {
+    e.stopPropagation()
+    await post<{}>(`group/delete/${groupId}`, {})
+    load()
+    toast({ title: "Group deleted", variant: "default" });
+  }
+
   let columns: ColumnDef<Group>[] = [
     {
       accessorKey: "name",
@@ -37,6 +46,10 @@ export default function GroupsPage() {
     {
       accessorKey: "description",
       header: "Description",
+    },
+    {
+      header: "actions",
+      cell: (x) => (<Button onClick={(e) => handleDelete(e, x.row.original.id)}><Trash /></Button>)
     },
   ];
 
