@@ -1,5 +1,15 @@
 "use client";
 
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/datatable";
 import { Input } from "@/components/ui/input";
@@ -7,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { get, post } from "@/utils/api";
 import { ColumnDef } from "@tanstack/react-table";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, Delete } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo, SyntheticEvent } from "react";
 import { Trash } from "lucide-react";
@@ -31,12 +41,6 @@ export default function GroupsPage() {
     load();
   }, []);
 
-  async function handleDelete(e: SyntheticEvent, groupId: number) {
-    e.stopPropagation()
-    await post<{}>(`group/delete/${groupId}`, {})
-    load()
-    toast({ title: "Group deleted", variant: "default" });
-  }
 
   let columns: ColumnDef<Group>[] = [
     {
@@ -49,7 +53,7 @@ export default function GroupsPage() {
     },
     {
       header: "actions",
-      cell: (x) => (<Button onClick={(e) => handleDelete(e, x.row.original.id)}><Trash /></Button>)
+      cell: (x) => (<DeleteGroupConfirmationPopup group={x.row.original} load={load} />)
     },
   ];
 
@@ -122,4 +126,38 @@ export default function GroupsPage() {
       </div>
     </div>
   );
+}
+
+type DeleteGroupConfirmationPopupProp = {
+  group: Group,
+  load: () => void,
+}
+
+export function DeleteGroupConfirmationPopup({ group, load }: DeleteGroupConfirmationPopupProp) {
+
+  let { toast } = useToast();
+
+  async function confirm() {
+    await post<{}>(`group/delete/${group.id}`, {})
+    load()
+    toast({ title: "Group deleted", variant: "default" });
+  }
+
+  return (
+    <div onClick={e => e.stopPropagation()}>
+      <Dialog>
+        <DialogTrigger><Trash /></DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{`Deseas borrar permanentemente el grupo ${group.name} ?`}</DialogTitle>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose onClick={confirm}>
+              Confirmar
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
 }
