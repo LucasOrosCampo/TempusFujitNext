@@ -18,10 +18,10 @@ namespace cs_backend.Services
             return db.Groups.Where(x => x.User.UserName == user).Select(GroupDto.FromState).ToArray();
         }
 
-        public async Task<GroupDto> Get(string user, string name)
+        public async Task<GroupDto> Get(string user, int id)
         {
             using var db = dbContextFactory.CreateDbContext();
-            var group = db.Groups.FirstOrDefault(x => x.User.UserName == user && x.Name == name);
+            var group = db.Groups.FirstOrDefault(x => x.User.UserName == user && x.Id == id);
             var group_dto = group != null ? GroupDto.FromState(group) : null;
 
             return group_dto;

@@ -104,7 +104,7 @@ export default function GroupsPage() {
         <DataTable
           columns={columns}
           data={groups.filter(shouldIncludeGroup)}
-          onRowClick={(group) => router.push(`group?groupName=${group.name}`)}
+          onRowClick={(group) => router.push(`group?groupId=${group.id}`)}
         />
       </div>
     </div>
