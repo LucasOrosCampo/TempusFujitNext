@@ -19,8 +19,8 @@ namespace cs_backend.Services
 
             return db.Sessions
                 .Where(x => x.GroupId == groupId 
-                && (!start.HasValue || start <= x.Start )
-                && (!end.HasValue || x.End <= end)
+                && (!start.HasValue || start <= x.Start.Date )
+                && (!end.HasValue || !x.End.HasValue  || x.End.Value.Date <= end)
                 )
                 .OrderByDescending(x => x.Start)
                 .Select(SessionDto.FromState).ToArray();

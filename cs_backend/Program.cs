@@ -1,3 +1,4 @@
+using cs_backend.Controllers.utils;
 using cs_backend.Infrastructure;
 using cs_backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,7 +51,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new DateTimeConverter()));
 
 var clientUrl = builder.Configuration["ClientUrl"];
 

@@ -1,9 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { addDays, format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
-import { DateRange } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -14,12 +12,12 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import dayjs from "dayjs"
+import { DateRange } from "@/app/sessions/page"
 
 type DatePickerProps = {
     dateRange: DateRange | undefined
     setDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>
 }
-dayjs.locale("es");
 export function DatePickerWithRange({
     className, dateRange, setDateRange
 }: React.HTMLAttributes<HTMLDivElement> & DatePickerProps) {
@@ -36,18 +34,20 @@ export function DatePickerWithRange({
                         )}
                     >
                         <CalendarIcon />
-                        {dateRange?.from ? (
-                            dateRange.to ? (
-                                <>
-                                    {dateRange.from.format("DD MMM, YY")} -{" "}
-                                    {dateRange.to.format("DD MMM, YY")}
-                                </>
-                            ) : (
-                                dateRange.from.format("DD MMM, YY")
+                        {dateRange?.from
+                            ? (
+                                dateRange.to ? (
+                                    <>
+                                        {dayjs(dateRange.from).format("DD MMM, YY")} -{" "}
+                                        {dayjs(dateRange.to).format("DD MMM, YY")}
+                                    </>
+                                ) : (
+                                    dayjs(dateRange.from).format("DD MMM, YY")
+                                )
                             )
-                        ) : (
-                            <span>Pick a date</span>
-                        )}
+                            : (
+                                <span>Pick a date</span>
+                            )}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -55,8 +55,8 @@ export function DatePickerWithRange({
                         initialFocus
                         mode="range"
                         defaultMonth={dateRange?.from ? dateRange?.from.toDate() : undefined}
-                        selected={{ from: dateRange?.from?.toDate(), to: dateRange?.to?.toDate() }}
-                        onSelect={(date) => setDateRange({ from: dayjs(date?.from), to: date?.to ? dayjs(date?.to) : undefined })}
+                        selected={dateRange ? { from: dateRange.from.toDate(), to: dateRange.to?.toDate() } : undefined}
+                        onSelect={(range) => setDateRange(range ? { from: dayjs(range.from).hour(12), to: dayjs(range.to).hour(12) } : range)}
                         numberOfMonths={2}
                     />
                 </PopoverContent>

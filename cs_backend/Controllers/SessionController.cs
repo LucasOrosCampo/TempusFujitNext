@@ -20,7 +20,8 @@ namespace cs_backend.Controllers
                 HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
                 return []; 
             }
-            return await sessionService.Search(user, group, start, end);
+            var sessions = await sessionService.Search(user, group, start, end);
+            return sessions;
         }
 
         public record StartSession(DateTime Start, int Group);

@@ -14,9 +14,9 @@ import { Session } from "../models/session";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePickerWithRange } from "@/components/ui/date-picker-range";
 import React from "react";
-import { DateRange } from "react-day-picker";
-import { setDate } from "date-fns";
+import utc from "dayjs/plugin/utc"
 
+dayjs.extend(utc)
 export default function SessionsPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -25,17 +25,32 @@ export default function SessionsPage() {
   );
 }
 
+export type DateRange = {
+  from: Dayjs
+  to?: Dayjs | undefined
+}
+
+function formatDuration(miliseconds: number): string {
+  let hours = miliseconds / 3600000
+  console.log(hours)
+  let exactHours = Math.floor(hours)
+  let minutes = 60 * (hours - exactHours)
+  return `${exactHours > 0 ? `${exactHours} h` : ''} ${minutes.toFixed(0)} m`
+}
+
 function SessionsPageContent() {
   let [sessions, setSessions] = useState<Session[]>([]);
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
-    from: dayjs().startOf('month'),
-    to: dayjs().endOf('month'),
+    from: dayjs().startOf('month').hour(12),
+    to: dayjs().endOf('month').hour(12),
   })
 
   let group = useSearchParams().get("group");
+
   let load = async () => {
-    let query = `session?group=${group}&start=${dateRange?.from}`
-    if (!!dateRange?.to) query += `&end=${dateRange?.to}`
+    if (dateRange === undefined) return
+    let query = `session?group=${group}&start=${dateRange?.from.utc().hour(0).minute(0).second(0)}`
+    if (!!dateRange?.to) query += `&end=${dateRange?.to.utc().hour(0).minute(0).second(0)}`
 
     setSessions(await get(query));
   };
@@ -53,6 +68,10 @@ function SessionsPageContent() {
     {
       accessorFn: (x: Session) => x.end ? dayjs(x.end).format('DD/MM HH:mm') : '',
       header: "Final",
+    },
+    {
+      accessorFn: (x: Session) => !!x.end && !!x.start ? formatDuration(dayjs(x.end).diff(dayjs(x.start))) : '',
+      header: "Duracion",
     },
   ];
   return (
