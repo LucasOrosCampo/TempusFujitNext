@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
+using static cs_backend.Services.GroupService;
 
 namespace cs_backend.Controllers
 {
@@ -41,6 +42,19 @@ namespace cs_backend.Controllers
             }
             return await groupService.Get(user, parsedInt);
         }
+        
+        [HttpGet]
+        [Route("export")]
+        public async Task<GroupsExport> Export()
+        {
+            var user = UserHelper.GetUser(User);
+            if (user == null) {
+                HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                return null; 
+            }
+            return await groupService.GetExport(user);
+        }
+
 
         [HttpPost]
         [Route("create")]

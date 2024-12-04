@@ -49,5 +49,19 @@ namespace cs_backend.Services
             return true;
         }
 
+        public record GroupsExport(GroupExport[] GroupExports);
+        public record GroupExport(string GroupName, SessionDto[] Sessions); 
+        public async Task<GroupsExport> GetExport(string user)
+        {
+            using var db = dbContextFactory.CreateDbContext();
+            var groupExports = (from g in db.Groups.Where(x => x.UserName == user)
+                      join s in db.Sessions
+                      on g.Id equals s.GroupId
+                      select new { Group = g, Session = s })
+                      .GroupBy(x => x.Group.Id)
+                      .Select(x => new GroupExport(x.First().Group.Name, x.Select(s => SessionDto.FromState(s.Session)).ToArray()))
+                      .ToArray();
+            return new GroupsExport(groupExports);
+        }
     }
 }

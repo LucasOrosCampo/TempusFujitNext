@@ -17,10 +17,12 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { get, post } from "@/utils/api";
 import { ColumnDef } from "@tanstack/react-table";
-import { CirclePlus, Delete } from "lucide-react";
+import { CirclePlus, Delete, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo, SyntheticEvent } from "react";
 import { Trash } from "lucide-react";
+import { Group, GroupRequest, GroupsExport } from "./models/group";
+import { createExport, downloadWorkbook } from "@/utils/exporter";
 
 export default function GroupsPage() {
   let [groups, setGroups] = useState<Group[]>([]);
@@ -70,6 +72,17 @@ export default function GroupsPage() {
     load();
   };
 
+  let handleExport = async () => {
+    let groupsExport = await get<GroupsExport>('group/export', () => { toast({ title: "Export Loading Error", variant: 'destructive' }) })
+    console.log(groupsExport)
+    try {
+      await downloadWorkbook(createExport(groupsExport))
+    }
+    catch {
+      toast({ title: "Export Error", variant: 'destructive' })
+    }
+  }
+
   let shouldIncludeGroup = (group: Group): boolean => {
     return (
       (!name || group.name.toLowerCase().includes(name.toLowerCase())) &&
@@ -81,9 +94,9 @@ export default function GroupsPage() {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <div className="flex justify-end m-4">
-        <Button>
-          But
+      <div className="flex self-end m-4">
+        <Button onClick={() => handleExport()}>
+          <Download />
         </Button>
       </div>
       <div className="flex gap-8 my-6">

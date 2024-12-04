@@ -1,7 +1,17 @@
+import { ExportedSession, Session } from "./session";
 
-type GroupRequest = {
+export type GroupRequest = {
   name: string;
   description: string | null;
 };
 
-type Group = { id : number } & GroupRequest
+export type Group = { id: number } & GroupRequest;
+
+export type GroupsExport = {
+  groupExports: GroupExport[];
+};
+
+export type GroupExport = {
+  groupName: string;
+  sessions: ExportedSession[];
+};

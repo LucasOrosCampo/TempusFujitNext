@@ -6,3 +6,8 @@ export type Session = {
   start: Dayjs | null;
   end: Dayjs | null;
 };
+
+export type ExportedSession = {
+  start: Dayjs | null;
+  end: Dayjs | null;
+};
