@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/ui/date-picker-range";
 import { useToast } from "@/hooks/use-toast";
 import { get, post } from "@/utils/api";
+import { formatDurationFromH } from "@/utils/helpers";
 import dayjs, { Dayjs } from "dayjs";
 import { Table } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
+
 
 const GroupPage = () => {
   return (
@@ -89,7 +91,7 @@ function GroupPageContent() {
       <div className="flex gap-5 mt-2">
         <h1 className="text-xl pt-1">{"Horas de sesion durante el periodo : "}</h1>
         <DatePickerWithRange dateRange={dateRange} setDateRange={setDateRange} />
-        <h1 className="text-xl pt-1">{durationForPeriod?.toFixed(1)}</h1>
+        <h1 className="text-xl pt-1">{durationForPeriod ? formatDurationFromH(durationForPeriod!) : ''}</h1>
       </div>
     </div>
   );

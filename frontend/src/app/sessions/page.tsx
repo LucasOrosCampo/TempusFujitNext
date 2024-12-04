@@ -15,6 +15,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { DatePickerWithRange } from "@/components/ui/date-picker-range";
 import React from "react";
 import utc from "dayjs/plugin/utc"
+import { formatDurationFromMs } from "@/utils/helpers";
 
 dayjs.extend(utc)
 export default function SessionsPage() {
@@ -28,14 +29,6 @@ export default function SessionsPage() {
 export type DateRange = {
   from: Dayjs
   to?: Dayjs | undefined
-}
-
-function formatDuration(miliseconds: number): string {
-  let hours = miliseconds / 3600000
-  console.log(hours)
-  let exactHours = Math.floor(hours)
-  let minutes = 60 * (hours - exactHours)
-  return `${exactHours > 0 ? `${exactHours} h` : ''} ${minutes.toFixed(0)} m`
 }
 
 function SessionsPageContent() {
@@ -70,7 +63,7 @@ function SessionsPageContent() {
       header: "Final",
     },
     {
-      accessorFn: (x: Session) => !!x.end && !!x.start ? formatDuration(dayjs(x.end).diff(dayjs(x.start))) : '',
+      accessorFn: (x: Session) => !!x.end && !!x.start ? formatDurationFromMs(dayjs(x.end).diff(dayjs(x.start))) : '',
       header: "Duracion",
     },
   ];

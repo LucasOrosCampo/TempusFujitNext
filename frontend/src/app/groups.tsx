@@ -81,6 +81,11 @@ export default function GroupsPage() {
 
   return (
     <div className="flex flex-col justify-center items-center">
+      <div className="flex justify-end m-4">
+        <Button>
+          But
+        </Button>
+      </div>
       <div className="flex gap-8 my-6">
         <div className="grid w-full max-w-sm items-center">
           <Label className="px-3" htmlFor="nameSearch">
