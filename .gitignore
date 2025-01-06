@@ -16,3 +16,6 @@
 /cs_backend/Properties/PublishProfiles
 /cs_backend/.config/dotnet-tools.json
 /cs_backend/cs_backend.csproj.user
+/cs_backend/.idea
+/frontend/.idea
+/cs_backend/cs_backend.sln.DotSettings.user

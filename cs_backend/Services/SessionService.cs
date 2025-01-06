@@ -10,7 +10,7 @@ namespace cs_backend.Services
     {
         public async Task<SessionDto[]> Search(string user, string group, DateTime? start, DateTime? end)
         {
-            using var db = dbContextFactory.CreateDbContext();
+            await using var db = await dbContextFactory.CreateDbContextAsync();
             var groupId = db.Groups.FirstOrDefault(x => x.Name == group && x.UserName == user)?.Id;
             if (groupId == null) return [];
 
@@ -26,13 +26,13 @@ namespace cs_backend.Services
                 .Select(SessionDto.FromState).ToArray();
         }
 
-        public async Task<GroupDto> Get(string user, string groupName)
+        public Task<GroupDto?> Get(string user, string groupName)
         {
             using var db = dbContextFactory.CreateDbContext();
             var group = db.Groups.FirstOrDefault(x => x.User.UserName == user && x.Name == groupName);
-            var group_dto = group != null ? GroupDto.FromState(group) : null;
+            var groupDto = group != null ? GroupDto.FromState(group) : null;
 
-            return group_dto;
+            return Task.FromResult(groupDto);
             
         }
 

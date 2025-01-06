@@ -1,13 +1,14 @@
-import { Dayjs } from "dayjs";
+import {Dayjs} from "dayjs";
 
 export type Session = {
-  id: number;
-  groupId: number;
-  start: Dayjs | null;
-  end: Dayjs | null;
+    id: number;
+    groupId: number;
+    start: Dayjs | null;
+    end: Dayjs | null;
 };
 
 export type ExportedSession = {
-  start: Dayjs | null;
-  end: Dayjs | null;
+    start: Dayjs | null;
+    end: Dayjs | null;
+    duration: number;
 };

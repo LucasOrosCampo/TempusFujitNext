@@ -14,44 +14,44 @@ namespace cs_backend.Services
     {
         public async Task<GroupDto[]> GetAll(string user)
         {
-            using var db = dbContextFactory.CreateDbContext();
+            await using var db = await dbContextFactory.CreateDbContextAsync();
             return db.Groups.Where(x => x.User.UserName == user).Select(GroupDto.FromState).ToArray();
         }
 
-        public async Task<GroupDto> Get(string user, int id)
+        public async Task<GroupDto?> Get(string user, int id)
         {
-            using var db = dbContextFactory.CreateDbContext();
+            await using var db = await dbContextFactory.CreateDbContextAsync();
             var group = db.Groups.FirstOrDefault(x => x.User.UserName == user && x.Id == id);
-            var group_dto = group != null ? GroupDto.FromState(group) : null;
+            var groupDto = group != null ? GroupDto.FromState(group) : null;
 
-            return group_dto;
+            return groupDto;
             
         }
 
 
-        public async Task<bool> CreateGroup(GroupRequest createGroup, string user)
+        public Task<bool> CreateGroup(GroupRequest createGroup, string user)
         {
             using var db = dbContextFactory.CreateDbContext(); 
-            if (db.Groups.Any(x => x.Name == createGroup.Name && x.User.UserName == user)) return false;
+            if (db.Groups.Any(x => x.Name == createGroup.Name && x.User.UserName == user)) return Task.FromResult(false);
             
             db.Add(new GroupState { Name = createGroup.Name, Description = createGroup.Description, UserName = user });
             db.SaveChanges();
-            return true;
+            return Task.FromResult(true);
         }
         
-        public async Task<bool> Delete(string user, int id)
+        public Task<bool> Delete(string user, int id)
         {
             using var db = dbContextFactory.CreateDbContext();
             var group = db.Groups.FirstOrDefault(x => x.Id == id && user == x.UserName);
-            if (group == null) return false;
+            if (group == null) return Task.FromResult(false);
             var groupId = db.Groups.Remove(group);
             db.SaveChanges();
-            return true;
+            return Task.FromResult(true);
         }
 
         public record GroupsExport(GroupExport[] GroupExports);
         public record GroupExport(string GroupName, SessionDto[] Sessions); 
-        public async Task<GroupsExport> GetExport(string user)
+        public Task<GroupsExport> GetExport(string user)
         {
             using var db = dbContextFactory.CreateDbContext();
             var groupExports = (from g in db.Groups.Where(x => x.UserName == user)
@@ -59,9 +59,10 @@ namespace cs_backend.Services
                       on g.Id equals s.GroupId
                       select new { Group = g, Session = s })
                       .GroupBy(x => x.Group.Id)
-                      .Select(x => new GroupExport(x.First().Group.Name, x.Select(s => SessionDto.FromState(s.Session)).ToArray()))
+                      .Select(x => new GroupExport($"{x.First().Group.Name}-{x.First().Group.Description}", x.Select(s => SessionDto.FromState(s.Session)).ToArray()))
                       .ToArray();
-            return new GroupsExport(groupExports);
+            return Task.FromResult(new GroupsExport(groupExports));
         }
     }
 }
+

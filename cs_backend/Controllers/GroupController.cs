@@ -36,11 +36,9 @@ namespace cs_backend.Controllers
                 return null;
             }
             var user = UserHelper.GetUser(User);
-            if (user == null) {
-                HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                return null; 
-            }
-            return await groupService.Get(user, parsedInt);
+            if (user != null) return await groupService.Get(user, parsedInt);
+            HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+            return null;
         }
         
         [HttpGet]
