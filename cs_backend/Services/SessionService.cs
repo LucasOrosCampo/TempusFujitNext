@@ -59,7 +59,8 @@ namespace cs_backend.Services
 
             if (runningSession == null || runningSession?.Start >= endSession.End) return false;
 
-            runningSession.End = endSession.End; 
+            runningSession.End = endSession.End;
+            runningSession.Note = endSession.Note;
 
             db.SaveChanges();
             return true;

@@ -36,7 +36,7 @@ namespace cs_backend.Controllers
             return (await sessionService.Start(user, startSession)) ? Ok() : BadRequest();
         }
 
-        public record EndSession(DateTime Start, DateTime End, int Group); 
+        public record EndSession(DateTime Start, DateTime End, int Group, string Note); 
         [HttpPost("end")]
         public async Task<IActionResult> End([FromBody] EndSession endSession)
         {

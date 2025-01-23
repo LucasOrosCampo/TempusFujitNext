@@ -7,5 +7,6 @@
         public DateTime? End { get; set; }
         public GroupState Group { get; set; }
         public int GroupId { get; set; }
+        public string Note { get; set; } = String.Empty;
     }
 }

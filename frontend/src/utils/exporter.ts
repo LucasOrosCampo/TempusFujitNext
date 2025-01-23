@@ -33,14 +33,22 @@ function createHeader(ws: Worksheet, data: GroupExport): void {
 }
 
 function getHeader(value: string): string | undefined {
-    return value === "start" ? "Comienzo" : value === "end" ? "Final" : value === "duration" ? "Duracion" : undefined;
+    return value === "start"
+        ? "Comienzo"
+        : value === "end"
+            ? "Final"
+            : value === "duration"
+                ? "Duracion"
+                : value === "note"
+                    ? "Nota"
+                    : undefined;
 }
 
 function createRow(ws: Worksheet, session: ExportedSession) {
     let startDate = dayjs(session.start)?.toDate();
     let endDate = session.end ? dayjs(session.end)?.toDate() : "";
     let duracion = formatDurationFromH(session.duration);
-    let row = ws?.addRow([startDate, endDate, duracion]);
+    ws?.addRow([startDate, endDate, duracion, session.note]);
 }
 
 
