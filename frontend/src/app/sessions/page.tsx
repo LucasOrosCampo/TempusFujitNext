@@ -16,6 +16,7 @@ import {DatePickerWithRange} from "@/components/ui/date-picker-range";
 import React from "react";
 import utc from "dayjs/plugin/utc"
 import {formatDurationFromMs} from "@/utils/helpers";
+import {DateRange} from "react-day-picker";
 
 dayjs.extend(utc)
 export default function SessionsPage() {
@@ -26,34 +27,29 @@ export default function SessionsPage() {
     );
 }
 
-export type DateRange = {
-    from: Dayjs
-    to?: Dayjs | undefined
-}
-
 function SessionsPageContent() {
     let [sessions, setSessions] = useState<Session[]>([]);
     const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
-        from: dayjs().startOf('month').hour(12),
-        to: dayjs().endOf('month').hour(12),
+        from: dayjs().startOf('month').hour(12).toDate(),
+        to: dayjs().endOf('month').hour(12).toDate(),
     })
 
     let group = useSearchParams().get("group");
 
     let load = async () => {
         if (dateRange === undefined) return
-        let query = `session?group=${group}&start=${dateRange?.from.utc().hour(0).minute(0).second(0)}`
-        if (!!dateRange?.to) query += `&end=${dateRange?.to.utc().hour(0).minute(0).second(0)}`
+        let query = `session?group=${group}&start=${dayjs(dateRange?.from).utc().hour(0).minute(0).second(0)}`
+        if (!!dateRange?.to) query += `&end=${dayjs(dateRange?.to).utc().hour(0).minute(0).second(0)}`
 
         setSessions(await get(query));
     };
     useEffect(() => {
         load();
-    }, []);
+    }, [load]);
 
     useEffect(() => {
         load()
-    }, [dateRange])
+    }, [dateRange, load])
 
     let columns: ColumnDef<Session>[] = [
         {

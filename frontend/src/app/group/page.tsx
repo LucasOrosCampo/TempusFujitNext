@@ -8,11 +8,10 @@ import dayjs, {Dayjs} from "dayjs";
 import {Table} from "lucide-react";
 import Link from "next/link";
 import {useSearchParams} from "next/navigation";
-import {Suspense, useEffect, useState} from "react";
+import {Suspense, useEffect, useState, useCallback} from "react";
 import {DateRange} from "react-day-picker";
 import {Group} from "../models/group";
 import {Textarea} from "@/components/ui/textarea";
-
 
 const GroupPage = () => {
     return (
@@ -27,60 +26,64 @@ export default GroupPage;
 type SessionStatus = 'Initial' | { start: Dayjs }
 
 function GroupPageContent() {
-
     let groupId = useSearchParams().get("groupId");
-    let [sessionNote, setSessionNote] = useState<string | undefined>(undefined)
-    let [sessionStatus, setSessionStatus] = useState<SessionStatus>('Initial')
+
+    let [sessionNote, setSessionNote] = useState<string | undefined>(undefined);
+    let [sessionStatus, setSessionStatus] = useState<SessionStatus>('Initial');
     let [dateRange, setDateRange] = useState<DateRange | undefined>({
-        from: dayjs().startOf('month'),
-        to: dayjs().endOf('month'),
-    })
-    let [durationForPeriod, setDurationForPeriod] = useState<number | undefined>(undefined)
+        from: dayjs().startOf('month').toDate(),
+        to: dayjs().endOf('month').toDate(),
+    });
+    let [durationForPeriod, setDurationForPeriod] = useState<number | undefined>(undefined);
 
-    let {toast} = useToast()
+    let {toast} = useToast();
 
-    async function load() {
+    const load = useCallback(async () => {
         let group = await get<Group>(`group/${groupId}`);
         setGroup(group);
-    }
+    }, [groupId]);
 
     let [group, setGroup] = useState<Group | undefined>(undefined);
 
     useEffect(() => {
         load();
-    }, []);
+    }, [load]);
 
-    async function getDuration() {
-        if (!group) return
-        let query = `session/duration?group=${group.name}&start=${dateRange?.from}`
-        if (!!dateRange?.to) query += `&end=${dateRange?.to}`
-        setDurationForPeriod(await get<number>(query))
-    }
+    const getDuration = useCallback(async () => {
+        if (!group) return;
+        let query = `session/duration?group=${group.name}&start=${dateRange?.from}`;
+        if (!!dateRange?.to) query += `&end=${dateRange?.to}`;
+        setDurationForPeriod(await get<number>(query));
+    }, [dateRange, group]);
 
     useEffect(() => {
         getDuration();
-    }, [dateRange, group]);
+    }, [dateRange, group, getDuration]);
 
     async function handleCreateSession() {
-        let now = dayjs()
+        let now = dayjs();
         await post('session/start', {start: now, group: group?.id}, () => toast({
             title: 'Error starting session',
             variant: 'destructive'
-        }))
-        setSessionStatus({start: now})
+        }));
+        setSessionStatus({start: now});
     }
 
     async function handleStopSession(): Promise<void> {
-        if (sessionStatus == 'Initial') return
-        let {start} = sessionStatus
+        if (sessionStatus == 'Initial') return;
+        let {start} = sessionStatus;
         try {
-            await post('session/end', {start: start, end: dayjs(), group: group?.id, note: sessionNote ?? ''})
+            await post('session/end', {start: start, end: dayjs(), group: group?.id, note: sessionNote ?? ''});
             toast({title: "Session added", variant: "default"});
         } catch {
-            toast({title: "Error while adding session", variant: "destructive"})
+            toast({title: "Error while adding session", variant: "destructive"});
         } finally {
-            setSessionStatus('Initial')
+            setSessionStatus('Initial');
         }
+    }
+
+    if (!groupId) {
+        return <div>Group ID is missing in the URL parameters.</div>;
     }
 
     return (

@@ -1,26 +1,27 @@
 "use client"
 
 import * as React from "react"
-import { Calendar as CalendarIcon } from "lucide-react"
+import {Calendar as CalendarIcon} from "lucide-react"
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import {cn} from "@/lib/utils"
+import {Button} from "@/components/ui/button"
+import {Calendar} from "@/components/ui/calendar"
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
 import dayjs from "dayjs"
-import { DateRange } from "@/app/sessions/page"
+import {DateRange} from "react-day-picker";
 
 type DatePickerProps = {
     dateRange: DateRange | undefined
     setDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>
 }
+
 export function DatePickerWithRange({
-    className, dateRange, setDateRange
-}: React.HTMLAttributes<HTMLDivElement> & DatePickerProps) {
+                                        className, dateRange, setDateRange
+                                    }: React.HTMLAttributes<HTMLDivElement> & DatePickerProps) {
     return (
         <div className={cn("grid gap-2", className)}>
             <Popover>
@@ -33,7 +34,7 @@ export function DatePickerWithRange({
                             !dateRange && "text-muted-foreground"
                         )}
                     >
-                        <CalendarIcon />
+                        <CalendarIcon/>
                         {dateRange?.from
                             ? (
                                 dateRange.to ? (
@@ -54,9 +55,12 @@ export function DatePickerWithRange({
                     <Calendar
                         initialFocus
                         mode="range"
-                        defaultMonth={dateRange?.from ? dateRange?.from.toDate() : undefined}
-                        selected={dateRange ? { from: dateRange.from.toDate(), to: dateRange.to?.toDate() } : undefined}
-                        onSelect={(range) => setDateRange(range ? { from: dayjs(range.from).hour(12), to: dayjs(range.to).hour(12) } : range)}
+                        defaultMonth={dateRange?.from}
+                        selected={dateRange ? {from: dateRange.from, to: dateRange.to} : undefined}
+                        onSelect={(range) => setDateRange(range ? {
+                            from: dayjs(range.from).hour(12).toDate(),
+                            to: dayjs(range.to).hour(12).toDate()
+                        } : range)}
                         numberOfMonths={2}
                     />
                 </PopoverContent>
