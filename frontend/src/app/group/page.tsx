@@ -11,7 +11,6 @@ import {useSearchParams} from "next/navigation";
 import {Suspense, useEffect, useState} from "react";
 import {DateRange} from "react-day-picker";
 import {Group} from "../models/group";
-import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 
 
