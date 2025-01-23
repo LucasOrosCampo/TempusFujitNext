@@ -24,7 +24,7 @@ jobs:
           
       - name: Install dependencies
         run: |
-          npm ci
+          npm install
           npm run build
       
       - name: Test ssh connection 
