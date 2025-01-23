@@ -26,6 +26,7 @@ jobs:
         run: |
           cd frontend
           npm install
+          npx tsc --version
           npm run build
       
       - name: Test ssh connection 
