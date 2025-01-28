@@ -28,6 +28,7 @@ jobs:
           npm install
           npx tsc --version
           npm run build
+          pwd
           
       - name: Remove old frontend 
         uses: appleboy/ssh-action@v1.2.0
@@ -47,5 +48,5 @@ jobs:
               username: ${{ secrets.USERNAME }}
               key: ${{ secrets.KEY }}
               port: ${{ secrets.PORT }}
-              source: "./out/"
+              source: "out/*"
               target: "/root/wwwroot/"
