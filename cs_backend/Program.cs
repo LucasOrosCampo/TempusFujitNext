@@ -58,7 +58,7 @@ var clientUrl = builder.Configuration["ClientUrl"];
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 // builder.Services.AddSwaggerGen();
-builder.Services.AddDbContextFactory<MyDbContext>( options => options.UseSqlite($"Data Source={Path.GetFullPath("tempusfujit.db")}"));
+builder.Services.AddDbContextFactory<MyDbContext>( options => options.UseSqlite($"Data Source={GetDbPath()}"));
 
 
 builder.Services.AddTransient<UserService>();
@@ -86,3 +86,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+string GetDbPath() =>
+    OperatingSystem.IsWindows() 
+        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "tempusfujit.db") 
+        : Path.Combine("/root", "tempusfujit.db");
