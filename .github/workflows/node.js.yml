@@ -28,16 +28,24 @@ jobs:
           npm install
           npx tsc --version
           npm run build
-          ls
-      
-      - name: Test ssh connection 
+          
+      - name: Remove old frontend 
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          script: |
-            rm -rf /root/wwwroot/*
-            mkdir -p /root/wwwroot
-            scp -r out/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/root/wwwroot
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            key: ${{ secrets.KEY }}
+            port: ${{ secrets.PORT }}
+            script: |
+              rm -rf /root/wwwroot/*
+              mkdir -p /root/wwwroot
+              
+      - name: scp files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+              host: ${{ secrets.HOST }}
+              username: ${{ secrets.USERNAME }}
+              key: ${{ secrets.KEY }}
+              port: ${{ secrets.PORT }}
+              source: "./out/"
+              target: "/root/wwwroot/"
