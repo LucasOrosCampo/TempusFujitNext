@@ -1,13 +1,12 @@
-name: Frontend deployment
+name: Frontend and Backend Deployment
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  build:
+  build-frontend:
     runs-on: ubuntu-latest
-    
 
     strategy:
       matrix:
@@ -16,12 +15,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          
+
       - name: Install dependencies
         run: |
           cd frontend
@@ -29,26 +28,63 @@ jobs:
           npx tsc --version
           npm run build
           pwd
-          
-             
-      - name: scp files
+
+      - name: SCP frontend files
         uses: appleboy/scp-action@v0.1.7
         with:
-              host: ${{ secrets.HOST }}
-              username: ${{ secrets.USERNAME }}
-              key: ${{ secrets.KEY }}
-              port: ${{ secrets.PORT }}
-              rm: true
-              source: "/home/runner/work/TempusFujitNext/TempusFujitNext/frontend/out/*"
-              target: "/var/www/tempusfujit/"
-              
-      - name: Lift contents
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          rm: true
+          source: "/home/runner/work/TempusFujitNext/TempusFujitNext/frontend/out/*"
+          target: "/var/www/tempusfujit/"
+
+      - name: Lift frontend contents
         uses: appleboy/ssh-action@v1.2.0
         with:
-            host: ${{ secrets.HOST }}
-            username: ${{ secrets.USERNAME }}
-            key: ${{ secrets.KEY }}
-            port: ${{ secrets.PORT }}
-            script: |
-              mv /var/www/tempusfujit/github/workspace/frontend/out/* /var/www/tempusfujit
-              rm -rf /var/www/tempusfujit/github
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            mv /var/www/tempusfujit/github/workspace/frontend/out/* /var/www/tempusfujit
+            rm -rf /var/www/tempusfujit/github
+
+  deploy-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Publish backend as self-contained
+        run: |
+          cd backend
+          dotnet publish -c Release -r linux-x64 --self-contained -o published
+
+      - name: SCP backend files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          rm: true
+          source: "/home/runner/work/TempusFujitNext/TempusFujitNext/backend/published/*"
+          target: "/root/tempusfujit_backend_source"
+
+      - name: Restart backend service
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            systemctl restart tempusfujit
