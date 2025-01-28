@@ -65,7 +65,7 @@ jobs:
 
       - name: Publish backend as self-contained
         run: |
-          cd backend
+          cd /home/runner/work/TempusFujitNext/TempusFujitNext/cs_backend
           dotnet publish -c Release -r linux-x64 --self-contained -o published
 
       - name: SCP backend files
@@ -76,7 +76,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           rm: true
-          source: "/home/runner/work/TempusFujitNext/TempusFujitNext/backend/published/*"
+          source: "/home/runner/work/TempusFujitNext/TempusFujitNext/cs_backend/published/*"
           target: "/root/tempusfujit_backend_source"
 
       - name: Restart backend service
