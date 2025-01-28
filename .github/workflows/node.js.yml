@@ -30,17 +30,7 @@ jobs:
           npm run build
           pwd
           
-      - name: Remove old frontend 
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-            host: ${{ secrets.HOST }}
-            username: ${{ secrets.USERNAME }}
-            key: ${{ secrets.KEY }}
-            port: ${{ secrets.PORT }}
-            script: |
-              rm -rf /root/wwwroot/*
-              mkdir -p /root/wwwroot
-              
+             
       - name: scp files
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -48,5 +38,17 @@ jobs:
               username: ${{ secrets.USERNAME }}
               key: ${{ secrets.KEY }}
               port: ${{ secrets.PORT }}
+              rm: true
               source: "/home/runner/work/TempusFujitNext/TempusFujitNext/frontend/out/*"
-              target: "/root/wwwroot/*"
+              target: "/root/wwwroot/"
+              
+      - name: Lift contents
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            key: ${{ secrets.KEY }}
+            port: ${{ secrets.PORT }}
+            script: |
+              mv /root/wwwroot/home/runner/work/TempusFujitNext/TempusFujitNext/frontend/out/* /root/wwwroot/
+              rm -rf /root/wwwroot/home
