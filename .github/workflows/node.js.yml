@@ -89,5 +89,5 @@ jobs:
           script: |
             mv /root/tempusfujit_backend_source/github/workspace/cs_backend/published/* /root/tempusfujit_backend_source/
             rm -rf /root/tempusfujit_backend_source/github
-            echo "${{ secrets.BACKEND_APPSETTINGS_PRODUCTION_JSON }}" > ~/tempusfujit_backend_source/appsettings.Production.json
+            echo '${{ secrets.BACKEND_APPSETTINGS_PRODUCTION_JSON }}' > ~/tempusfujit_backend_source/appsettings.Production.json
             systemctl restart tempusfujit
