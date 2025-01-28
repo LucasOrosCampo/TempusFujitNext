@@ -20,7 +20,9 @@ type DatePickerProps = {
 }
 
 export function DatePickerWithRange({
-                                        className, dateRange, setDateRange
+                                        className,
+                                        dateRange,
+                                        setDateRange
                                     }: React.HTMLAttributes<HTMLDivElement> & DatePickerProps) {
     return (
         <div className={cn("grid gap-2", className)}>

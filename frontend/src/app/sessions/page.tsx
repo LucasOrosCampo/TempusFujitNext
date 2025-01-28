@@ -1,17 +1,13 @@
 "use client";
 
-import {Button} from "@/components/ui/button";
 import {DataTable} from "@/components/ui/datatable";
-import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {useToast} from "@/hooks/use-toast";
-import {get, post} from "@/utils/api";
+import {dateAsUtc, get} from "@/utils/api";
 import {ColumnDef} from "@tanstack/react-table";
-import {CirclePlus} from "lucide-react";
-import {useRouter, useSearchParams} from "next/navigation";
-import {useState, useEffect, useMemo, Suspense} from "react";
+import {useSearchParams} from "next/navigation";
+import {useState, useEffect, Suspense} from "react";
 import {Session} from "../models/session";
-import dayjs, {Dayjs} from "dayjs";
+import dayjs from "dayjs";
 import {DatePickerWithRange} from "@/components/ui/date-picker-range";
 import React from "react";
 import utc from "dayjs/plugin/utc"
@@ -38,18 +34,19 @@ function SessionsPageContent() {
 
     let load = async () => {
         if (dateRange === undefined) return
-        let query = `session?group=${group}&start=${dayjs(dateRange?.from).utc().hour(0).minute(0).second(0)}`
-        if (!!dateRange?.to) query += `&end=${dayjs(dateRange?.to).utc().hour(0).minute(0).second(0)}`
+        let query = `session?group=${group}&start=${dateAsUtc(dateRange?.from)}`
+        if (!!dateRange?.to) query += `&end=${dateAsUtc(dateRange?.to)}`
 
         setSessions(await get(query));
     };
+
     useEffect(() => {
         load();
-    }, [load]);
+    }, []);
 
     useEffect(() => {
         load()
-    }, [dateRange, load])
+    }, [dateRange])
 
     let columns: ColumnDef<Session>[] = [
         {

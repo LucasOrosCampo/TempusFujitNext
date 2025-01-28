@@ -2,7 +2,7 @@
 import {Button} from "@/components/ui/button";
 import {DatePickerWithRange} from "@/components/ui/date-picker-range";
 import {useToast} from "@/hooks/use-toast";
-import {get, post} from "@/utils/api";
+import {dateAsUtc, get, post} from "@/utils/api";
 import {formatDurationFromH} from "@/utils/helpers";
 import dayjs, {Dayjs} from "dayjs";
 import {Table} from "lucide-react";
@@ -23,6 +23,7 @@ const GroupPage = () => {
 
 export default GroupPage;
 
+dayjs.extend(require('dayjs/plugin/utc'));
 type SessionStatus = 'Initial' | { start: Dayjs }
 
 function GroupPageContent() {
@@ -51,14 +52,14 @@ function GroupPageContent() {
 
     const getDuration = useCallback(async () => {
         if (!group) return;
-        let query = `session/duration?group=${group.name}&start=${dateRange?.from}`;
-        if (!!dateRange?.to) query += `&end=${dateRange?.to}`;
+        let query = `session/duration?group=${group.name}&start=${dateAsUtc(dateRange?.from)}`;
+        if (!!dateRange?.to) query += `&end=${dateAsUtc(dateRange?.to)}`;
         setDurationForPeriod(await get<number>(query));
     }, [dateRange, group]);
 
     useEffect(() => {
         getDuration();
-    }, [dateRange, group, getDuration]);
+    }, [dateRange, group]);
 
     async function handleCreateSession() {
         let now = dayjs();
