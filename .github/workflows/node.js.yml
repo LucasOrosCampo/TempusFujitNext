@@ -87,4 +87,6 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
+            mv /root/tempusfujit_backend_source/github/workspace/cs_backend/published/* root/tempusfujit_backend_source/
+            rm -rf /root/tempusfujit_backend_source/github
             systemctl restart tempusfujit
