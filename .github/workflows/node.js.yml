@@ -40,7 +40,7 @@ jobs:
               port: ${{ secrets.PORT }}
               rm: true
               source: "/home/runner/work/TempusFujitNext/TempusFujitNext/frontend/out/*"
-              target: "/root/wwwroot/"
+              target: "/var/www/tempusfujit/"
               
       - name: Lift contents
         uses: appleboy/ssh-action@v1.2.0
@@ -50,5 +50,5 @@ jobs:
             key: ${{ secrets.KEY }}
             port: ${{ secrets.PORT }}
             script: |
-              mv /root/wwwroot/github/workspace/frontend/out/* /root/wwwroot/
-              rm -rf /root/wwwroot/github
+              mv /var/www/tempusfujit/github/workspace/frontend/out/* /var/www/tempusfujit
+              rm -rf /var/www/tempusfujit/github

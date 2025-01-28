@@ -47,7 +47,7 @@ export default function Page() {
     }
 
     return (
-        <div className="bg-red-300 h-screen flex items-center justify-center">
+        <div className="bg-green-200 h-screen flex items-center justify-center">
             <div
                 className="bg-blue-400 h-1/4 p-5 max-w-md min-w-fit
         w-1/2 rounded-xl shadow-xl flex flex-col justify-evenly gap-1"
