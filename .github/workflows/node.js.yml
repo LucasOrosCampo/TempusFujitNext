@@ -49,4 +49,4 @@ jobs:
               key: ${{ secrets.KEY }}
               port: ${{ secrets.PORT }}
               source: "/home/runner/work/TempusFujitNext/TempusFujitNext/frontend/out/*"
-              target: "/root/wwwroot/"
+              target: "/root/wwwroot/*"
