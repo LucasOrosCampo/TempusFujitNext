@@ -28,6 +28,7 @@ jobs:
           npm install
           npx tsc --version
           npm run build
+          ls
       
       - name: Test ssh connection 
         uses: appleboy/ssh-action@v1.2.0
@@ -37,6 +38,6 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            whoami
-            ls -al
-            echo "Hello World [[[[[[[[[[[[[[[[[[[[[}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+            rm -rf /root/wwwroot/*
+            mkdir -p /root/wwwroot
+            scp -r out/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/root/wwwroot
