@@ -37,8 +37,8 @@ export async function post<T>(route: string, body: T, failCallback?: undefined |
 
 export function dateAsUtc(date: Date | undefined, withSafetyOffset: boolean = true): Dayjs | undefined {
     if (!date) return undefined
-    let paddedDate
+    let paddedDate = dayjs(date)
     if (withSafetyOffset)
-        paddedDate = dayjs(date).hour(12)
+        paddedDate = paddedDate.hour(12)
     return paddedDate!.utc().hour(0).minute(0).second(0).millisecond(0)
 }
