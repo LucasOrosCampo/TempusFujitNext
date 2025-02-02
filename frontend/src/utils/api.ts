@@ -1,6 +1,8 @@
 import tokenService from "./token";
 import dayjs, {Dayjs} from "dayjs";
+import utc from 'dayjs/plugin/utc'
 
+dayjs.extend(utc)
 const api_host = (process.env.NODE_ENV === 'development') ? 'http://localhost:5182' : 'https://tempusfujit.com/api'
 
 export async function get<T>(route: string, failCallback?: undefined | (() => void)): Promise<T> {
