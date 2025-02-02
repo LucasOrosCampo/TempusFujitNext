@@ -15,20 +15,23 @@ import {DataTable} from "@/components/ui/datatable";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {useToast} from "@/hooks/use-toast";
-import {get, post} from "@/utils/api";
+import {dateAsUtc, get, post} from "@/utils/api";
 import {ColumnDef} from "@tanstack/react-table";
 import {CirclePlus, Delete, Download} from "lucide-react";
 import {useRouter} from "next/navigation";
 import {useState, useEffect, useMemo, SyntheticEvent} from "react";
 import {Trash} from "lucide-react";
-import {Group, GroupRequest, GroupsExport} from "./models/group";
-import {createExport, downloadWorkbook} from "@/utils/exporter";
+import {Group, GroupRequest, GroupsExport} from "@/app/group/_models";
+import {createExport, downloadWorkbook} from "@/app/group/_groupsExport";
+import {YearPicker} from "@/components/ui/year-picker";
+import dayjs from "dayjs";
 
-export default function GroupsPage() {
+
+export default function Home() {
     let [groups, setGroups] = useState<Group[]>([]);
     let [name, setName] = useState<string | undefined>(undefined);
     let [description, setDescription] = useState<string | undefined>(undefined);
-
+    let [selectedYear, setSelectedYear] = useState<number | undefined>(undefined);
 
     let router = useRouter();
 
@@ -74,7 +77,8 @@ export default function GroupsPage() {
     };
 
     let handleExport = async () => {
-        let groupsExport = await get<GroupsExport>('group/export', () => {
+        let exportRoute = `group/export${selectedYear ? `?date=${dateAsUtc(dayjs().year(selectedYear).toDate())}` : ''}`
+        let groupsExport = await get<GroupsExport>(exportRoute, () => {
             toast({title: "Export Loading Error", variant: 'destructive'})
         })
         console.log(groupsExport)
@@ -97,6 +101,7 @@ export default function GroupsPage() {
     return (
         <div className="flex flex-col justify-center items-center">
             <div className="flex self-end m-4">
+                <YearPicker year={selectedYear} setYear={(year) => setSelectedYear(year)}/>
                 <Button onClick={() => handleExport()}>
                     <Download/>
                 </Button>

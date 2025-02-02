@@ -41,6 +41,7 @@ namespace cs_backend.Controllers
             return null;
         }
         
+        /*
         [HttpGet]
         [Route("export")]
         public async Task<GroupsExport> Export()
@@ -52,7 +53,20 @@ namespace cs_backend.Controllers
             }
             return await groupService.GetExport(user);
         }
-
+        */
+        
+        [HttpGet]
+        [Route("export")]
+        public async Task<GroupsExport> Export([FromQuery] DateTime? date)
+        {
+            var user = UserHelper.GetUser(User);
+            if (user == null) {
+                HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                return null; 
+            }
+            
+            return await groupService.GetExport(user, date);
+        }
 
         [HttpPost]
         [Route("create")]

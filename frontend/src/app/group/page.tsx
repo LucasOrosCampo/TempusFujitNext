@@ -10,7 +10,7 @@ import Link from "next/link";
 import {useSearchParams} from "next/navigation";
 import {Suspense, useEffect, useState, useCallback} from "react";
 import {DateRange} from "react-day-picker";
-import {Group} from "../models/group";
+import {Group} from "@/app/group/_models";
 import {Textarea} from "@/components/ui/textarea";
 
 const GroupPage = () => {

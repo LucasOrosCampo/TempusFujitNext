@@ -4,3 +4,6 @@ GET {{cs_backend_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+@date = 2023-10-31T00:00:00Z
+GET {{cs_backend_HostAddress}}/group/export/{{date}}
+Accept: application/json
