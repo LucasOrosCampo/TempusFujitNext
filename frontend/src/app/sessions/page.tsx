@@ -6,7 +6,7 @@ import {dateAsUtc, get} from "@/utils/api";
 import {ColumnDef} from "@tanstack/react-table";
 import {useSearchParams} from "next/navigation";
 import {useState, useEffect, Suspense} from "react";
-import {Session} from "@/models/session";
+import {Session} from "@/app/sessions/_models";
 import dayjs from "dayjs";
 import {DatePickerWithRange} from "@/components/ui/date-picker-range";
 import React from "react";
