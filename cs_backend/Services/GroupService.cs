@@ -63,6 +63,7 @@ namespace cs_backend.Services
                       select new { Group = g, Session = s })
                       .GroupBy(x => x.Group.Id)
                       .AsEnumerable()
+                      .OrderBy(x => x.First().Group.Name)
                       .Select(x =>
                       {
                           var sessions = x.Select(s => SessionDto.FromState(s.Session)).ToArray();
