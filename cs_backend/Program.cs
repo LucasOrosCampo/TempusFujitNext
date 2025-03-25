@@ -1,5 +1,6 @@
 using cs_backend.Controllers.utils;
 using cs_backend.Infrastructure;
+using cs_backend.Infrastructure.Middleware;
 using cs_backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 builder.Services.AddControllers()
     .AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new DateTimeConverter()));
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 var clientUrl = builder.Configuration["ClientUrl"];
 
@@ -61,6 +65,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseMiddleware<ExceptionLoggerMiddleware>();
 
 app.Run();
 

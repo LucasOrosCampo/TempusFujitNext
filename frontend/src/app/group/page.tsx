@@ -76,8 +76,9 @@ function GroupPageContent() {
         try {
             await post('session/end', {start: start, end: dayjs(), group: group?.id, note: sessionNote ?? ''});
             toast({title: "Session added", variant: "default"});
-        } catch {
-            toast({title: "Error while adding session", variant: "destructive"});
+        } catch (e) {
+            let textException = JSON.stringify(e)
+            toast({title: `Error añadiendo la session : ${textException}`, variant: "destructive"});
         } finally {
             setSessionStatus('Initial');
         }
