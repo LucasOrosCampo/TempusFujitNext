@@ -15,7 +15,7 @@ namespace cs_backend.Controllers
         {
             if (! await userService.LogIn(loginUser)) return BadRequest();
             else  return Ok(jwt.GenerateJwtToken(loginUser.UserName)); 
-        }
+        } 
 
         [HttpPost("register")]
         public async Task Register([FromBody] UserAuthenticationData registerUser)
@@ -28,6 +28,12 @@ namespace cs_backend.Controllers
         [Authorize]
         [HttpGet("validate/token")]
         public async Task<bool> ValidateToken() => true;
+
+        [HttpGet("validate/other")]
+        public async Task<bool> other()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public record UserAuthenticationData

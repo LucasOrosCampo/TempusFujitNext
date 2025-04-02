@@ -5,6 +5,7 @@ import {jwtDecode} from "jwt-decode";
 import tokenService from "@/utils/token";
 import {useRouter} from "next/navigation";
 import Home from "./home";
+import {logout} from "@/lib/auth";
 
 export default function Entrypoint() {
     let router = useRouter();
@@ -12,15 +13,23 @@ export default function Entrypoint() {
     let [username, setUsername] = useState<string | undefined>(undefined);
 
     async function tryToken() {
-        var result = await get<boolean>("user/validate/token", () => {
-            router.push("/login");
-        });
-        let token = tokenService.getToken();
-        if (result && token !== null) {
-            let jwt = jwtDecode(token!);
-            jwt.sub !== undefined && setUsername(jwt?.sub);
+        try {
+            let result = await get<boolean>("user/validate/token", () => {
+                logout(router)
+            });
+            if (!result) {
+                logout(router)
+                return;
+            }
+            let token = tokenService.getToken();
+            if (result && token !== null) {
+                let jwt = jwtDecode(token!);
+                jwt.sub !== undefined && setUsername(jwt?.sub);
+            }
+            setIsAuthed(result);
+        } catch (e) {
+            logout(router)
         }
-        setIsAuthed(result);
     }
 
     useEffect(() => {

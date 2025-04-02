@@ -4,7 +4,6 @@ import {
     Dialog,
     DialogClose,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -17,7 +16,7 @@ import {Label} from "@/components/ui/label";
 import {useToast} from "@/hooks/use-toast";
 import {dateAsUtc, get, post} from "@/utils/api";
 import {ColumnDef} from "@tanstack/react-table";
-import {CirclePlus, Delete, Download} from "lucide-react";
+import {ChartAreaIcon, CirclePlus, Download, LogOutIcon} from "lucide-react";
 import {useRouter} from "next/navigation";
 import {useState, useEffect, useMemo, SyntheticEvent} from "react";
 import {Trash} from "lucide-react";
@@ -25,7 +24,7 @@ import {Group, GroupRequest, GroupsExport} from "@/app/group/_models";
 import {createExport, downloadWorkbook} from "@/app/group/_groupsExport";
 import {YearPicker} from "@/components/ui/year-picker";
 import dayjs from "dayjs";
-
+import {logout} from "@/lib/auth";
 
 export default function Home() {
     let [groups, setGroups] = useState<Group[]>([]);
@@ -81,7 +80,6 @@ export default function Home() {
         let groupsExport = await get<GroupsExport>(exportRoute, () => {
             toast({title: "Export Loading Error", variant: 'destructive'})
         })
-        console.log(groupsExport)
         try {
             await downloadWorkbook(createExport(groupsExport))
         } catch {
@@ -100,11 +98,19 @@ export default function Home() {
 
     return (
         <div className="flex flex-col justify-center items-center">
-            <div className="flex self-end m-4">
-                <YearPicker year={selectedYear} setYear={(year) => setSelectedYear(year)}/>
-                <Button onClick={() => handleExport()}>
-                    <Download/>
+            <div className="flex justify-between w-full">
+                <Button className="m-4 self-start" variant="outline" onClick={() => logout(router)}>
+                    <LogOutIcon/>
                 </Button>
+                <Button className="m-4 self-start" variant="outline" onClick={() => router.push('/chart')}>
+                    <ChartAreaIcon></ChartAreaIcon>
+                </Button>
+                <div className="flex self-end m-4 ml-auto">
+                    <YearPicker year={selectedYear} setYear={(year) => setSelectedYear(year)}/>
+                    <Button onClick={() => handleExport()}>
+                        <Download/>
+                    </Button>
+                </div>
             </div>
             <div className="flex gap-8 my-6">
                 <div className="grid w-full max-w-sm items-center">
