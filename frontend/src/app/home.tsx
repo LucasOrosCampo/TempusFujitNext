@@ -102,9 +102,9 @@ export default function Home() {
                 <Button className="m-4 self-start" variant="outline" onClick={() => logout(router)}>
                     <LogOutIcon/>
                 </Button>
-                <Button className="m-4 self-start" variant="outline" onClick={() => router.push('/chart')}>
+                {false && <Button className="m-4 self-start" variant="outline" onClick={() => router.push('/chart')}>
                     <ChartAreaIcon></ChartAreaIcon>
-                </Button>
+                </Button>}
                 <div className="flex self-end m-4 ml-auto">
                     <YearPicker year={selectedYear} setYear={(year) => setSelectedYear(year)}/>
                     <Button onClick={() => handleExport()}>
