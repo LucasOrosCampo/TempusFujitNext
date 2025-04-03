@@ -48,6 +48,18 @@ namespace cs_backend.Controllers
             return (await sessionService.End(user, endSession)) ? Ok() : BadRequest();
         }
         
+        public record AddSession(DateTime Start, DateTime End, int Group, string Note); 
+        [HttpPost("add")]
+        public async Task<IActionResult> Add([FromBody] AddSession endSession)
+        {
+            var user = UserHelper.GetUser(User);
+            if (user == null) {
+                HttpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                return Forbid(); 
+            }
+            return (await sessionService.Add(user, endSession)) ? Ok() : BadRequest();
+        }
+        
         [HttpGet("duration")]
         public async Task<double> GetDuration([FromQuery] string group, [FromQuery] DateTime? start,[FromQuery] DateTime? end)
         {

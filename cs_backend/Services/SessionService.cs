@@ -51,7 +51,7 @@ namespace cs_backend.Services
         public async Task<bool> End(string user, EndSession endSession)
         {
             using var db = dbContextFactory.CreateDbContext(); 
-            var groupId = db.Groups.FirstOrDefault(x => x.Id == endSession.Group)?.Id;
+            var groupId = db.Groups.FirstOrDefault(x => x.Id == endSession.Group && x.UserName == user)?.Id;
 
             if (groupId == null) return false;
             
@@ -73,6 +73,20 @@ namespace cs_backend.Services
 
             return sessions.Sum(x => x.End != null ? (x.End - x.Start).Value.TotalHours : 0);
                 
+        }
+
+        public async Task<bool> Add(string user, AddSession addSession)
+        {
+            using var db = dbContextFactory.CreateDbContext(); 
+            var groupId = db.Groups.FirstOrDefault(x => x.Id == addSession.Group && x.UserName == user)?.Id;
+
+            if (groupId == null) return false;
+            
+            if (addSession.Start >= addSession.End) return false;
+                
+            db.Add(new SessionState { Start= addSession.Start, End = addSession.End, GroupId = groupId.Value, Note = addSession.Note });
+            
+            return db.SaveChanges() == 1;
         }
     }
 }
