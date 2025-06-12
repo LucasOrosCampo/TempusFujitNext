@@ -88,5 +88,16 @@ namespace cs_backend.Services
             
             return db.SaveChanges() == 1;
         }
+
+        public async Task Delete(string user, int sessionId)
+        {
+            using var db = dbContextFactory.CreateDbContext();
+            var session = db.Sessions.FirstOrDefault(x => x.Id == sessionId);
+            if (session == null) return;
+            var group = db.Groups.FirstOrDefault(x => x.Id == session.GroupId);
+            if (group.UserName != user) return;
+            db.Sessions.Remove(session);
+            db.SaveChanges();
+        } 
     }
 }

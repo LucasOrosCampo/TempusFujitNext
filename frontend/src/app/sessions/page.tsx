@@ -2,7 +2,7 @@
 
 import {DataTable} from "@/components/ui/datatable";
 import {Label} from "@/components/ui/label";
-import {dateAsUtc, get} from "@/utils/api";
+import {dateAsUtc, get, post} from "@/utils/api";
 import {ColumnDef} from "@tanstack/react-table";
 import {useSearchParams} from "next/navigation";
 import {useState, useEffect, Suspense} from "react";
@@ -13,6 +13,8 @@ import React from "react";
 import utc from "dayjs/plugin/utc"
 import {formatDurationFromMs} from "@/utils/helpers";
 import {DateRange} from "react-day-picker";
+import {Trash} from "lucide-react";
+import {Button} from "@/components/ui/button";
 
 dayjs.extend(utc)
 export default function SessionsPage() {
@@ -39,6 +41,11 @@ function SessionsPageContent() {
 
         setSessions(await get(query));
     };
+
+    let deleteSession = async (session: Session) => {
+        await post(`session/delete/${session.id}`, {})
+        load()
+    }
 
     useEffect(() => {
         load();
@@ -70,6 +77,11 @@ function SessionsPageContent() {
             ),
             header: "Nota",
         },
+        {
+            header: "actions",
+            cell: (x) => (<Button onClick={() => deleteSession(x.row.original)}><Trash/></Button>)
+        },
+
     ];
     return (
         <div className="flex flex-col justify-center items-center gap-4">

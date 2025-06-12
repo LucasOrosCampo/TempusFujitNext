@@ -31,8 +31,6 @@ builder.Services.AddControllers()
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-var clientUrl = builder.Configuration["ClientUrl"];
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContextFactory<MyDbContext>(options => options.UseSqlite($"Data Source={GetDbPath()}"));

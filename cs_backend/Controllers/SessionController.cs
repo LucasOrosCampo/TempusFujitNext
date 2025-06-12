@@ -71,6 +71,12 @@ namespace cs_backend.Controllers
             return await sessionService.GetDuration(user, group, start, end);
         }
 
-
+        [HttpPost("delete/{sessionId}")]
+        public async Task Delete([FromRoute] string sessionId)
+        {
+            var user = UserHelper.GetUser(User);
+            var parsedSessionId = int.Parse(sessionId);
+            await sessionService.Delete(user, parsedSessionId);
+        }
     }
 } 
